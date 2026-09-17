@@ -1,0 +1,348 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: tymer 2026.1\n"
+"Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
+"POT-Creation-Date: 2026-09-17 16:30+0300\n"
+"PO-Revision-Date: 2026-09-17 16:30+0300\n"
+"Last-Translator: Kamal Yaser <kamalyaser31@gmail.com>\n"
+"Language-Team: Arabic <LL@li.org>\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+#: buildVars.py:10 addon\globalPlugins\tymer\__init__.py:39
+msgid "Tymer"
+msgstr "Tymer"
+
+#: buildVars.py:11
+msgid ""
+"A modal command layer countdown timer add-on for NVDA providing 5 "
+"customizable timer slots with sound and speech alerts."
+msgstr ""
+"إضافة مؤقتات عد تنازلي لقارئ الشاشة NVDA تتيح 5 فتحات مستقلة قابلة للتخصيص "
+"عبر طبقة أوامر فورية مع تنبيهات صوتية ونطقية."
+
+#: buildVars.py:15
+msgid ""
+"- Version 2026.1: Initial release with 5-slot countdown timers, one-shot "
+"modal command layer, quad actions, and NVDA settings panel."
+msgstr ""
+"- الإصدار 2026.1: الإصدار الأول بخمس فتحات للمؤقتات التنازلية، وطبقة أوامر "
+"أحادية النفاذ، وإجراءات رباعية متوازنة، ولوحة إعدادات مدمجة في تفضيلات NVDA."
+
+#: addon\globalPlugins\tymer\__init__.py:129
+msgid "Query or start timer {0}"
+msgstr "استعلام أو بدء المؤقت {0}"
+
+#: addon\globalPlugins\tymer\__init__.py:130
+msgid "Pause or resume timer {0}"
+msgstr "إيقاف مؤقت أو استئناف للمؤقت {0}"
+
+#: addon\globalPlugins\tymer\__init__.py:131
+msgid "Set duration for timer {0}"
+msgstr "تعيين مدة المؤقت {0}"
+
+#: addon\globalPlugins\tymer\__init__.py:132
+msgid "Reset timer {0}"
+msgstr "إعادة ضبط المؤقت {0}"
+
+#: addon\globalPlugins\tymer\__init__.py:141
+msgid "Silence active alarm"
+msgstr "إسكات رنين التنبيه الحالي"
+
+#: addon\globalPlugins\tymer\__init__.py:142
+msgid "Report status of all timers"
+msgstr "تقرير عن حالة كافة المؤقتات"
+
+#: addon\globalPlugins\tymer\__init__.py:143
+msgid "Show command layer help in browse mode"
+msgstr "عرض مسرد أوامر الطبقة في نمط التصفح"
+
+#: addon\globalPlugins\tymer\__init__.py:144
+msgid "Exit command layer"
+msgstr "الخروج من طبقة الأوامر"
+
+#: addon\globalPlugins\tymer\__init__.py:157
+msgid "{name} started: {time}."
+msgstr "تم بدء {name}: {time}."
+
+#: addon\globalPlugins\tymer\__init__.py:173
+msgid "{name} paused."
+msgstr "تم إيقاف {name} مؤقتاً."
+
+#: addon\globalPlugins\tymer\__init__.py:176
+msgid "{name} resumed."
+msgstr "تم استئناف {name}."
+
+#: addon\globalPlugins\tymer\__init__.py:194
+msgid "Duration dialog is already open."
+msgstr "نافذة تعيين المدة مفتوحة بالفعل."
+
+#: addon\globalPlugins\tymer\__init__.py:204
+msgid "{name} reset to {time}."
+msgstr "تمت إعادة ضبط {name} إلى {time}."
+
+#: addon\globalPlugins\tymer\__init__.py:163
+msgid "Query or start stopwatch"
+msgstr "استعلام أو بدء ساعة الإيقاف"
+
+#: addon\globalPlugins\tymer\__init__.py:168
+msgid "Pause or resume stopwatch"
+msgstr "تعليق أو استئناف ساعة الإيقاف"
+
+#: addon\globalPlugins\tymer\__init__.py:173
+msgid "Restart stopwatch from zero"
+msgstr "إعادة بدء ساعة الإيقاف من الصفر"
+
+#: addon\globalPlugins\tymer\__init__.py:178
+msgid "Reset stopwatch to zero"
+msgstr "تصفير ساعة الإيقاف وإيقافها"
+
+#: addon\globalPlugins\tymer\__init__.py:263
+msgid "Started"
+msgstr "بدأت"
+
+#: addon\globalPlugins\tymer\__init__.py:267
+#, python-brace-format
+msgid "{time}, paused"
+msgstr "{time} معلقة"
+
+#: addon\globalPlugins\tymer\__init__.py:276
+msgid "Paused"
+msgstr "معلقة"
+
+#: addon\globalPlugins\tymer\__init__.py:279
+msgid "Resumed"
+msgstr "استؤنفت"
+
+#: addon\globalPlugins\tymer\__init__.py:281
+msgid "Stopwatch is stopped."
+msgstr "ساعة الإيقاف متوقفة."
+
+#: addon\globalPlugins\tymer\__init__.py:288
+msgid "Restarted"
+msgstr "أُعيد البدء"
+
+#: addon\globalPlugins\tymer\__init__.py:295
+msgid "Reset"
+msgstr "تم التصفير"
+
+#: addon\globalPlugins\tymer\__init__.py:407
+msgid ""
+"Enters Tymer command layer. Press numbers 1-5 for timers, Q for quick timer, "
+"S for stopwatch, Space to silence, H for help."
+msgstr ""
+"ولوج طبقة أوامر Tymer. اضغط الأرقام من 1 إلى 5 للمؤقتات، و Q للمؤقت السريع، و S لساعة الإيقاف، "
+"ومسافة للإسكات، و H للمساعدة."
+
+#: addon\globalPlugins\tymer\__init__.py:293
+msgid "Alarm silenced."
+msgstr "تم إسكات التنبيه."
+
+#: addon\globalPlugins\tymer\__init__.py:304
+msgid "Tymer Layer Commands"
+msgstr "أوامر طبقة Tymer"
+
+#: addon\globalPlugins\tymer\__init__.py:305
+msgid "Tymer Help"
+msgstr "مساعدة Tymer"
+
+#: addon\globalPlugins\tymer\timerHandler.py:23
+msgid "0 seconds"
+msgstr "0 ثانية"
+
+#: addon\globalPlugins\tymer\timerHandler.py:28
+msgid "1 hour"
+msgstr "ساعة واحدة"
+
+#: addon\globalPlugins\tymer\timerHandler.py:30
+msgid "{count} hours"
+msgstr "{count} ساعات"
+
+#: addon\globalPlugins\tymer\timerHandler.py:32
+msgid "1 minute"
+msgstr "دقيقة واحدة"
+
+#: addon\globalPlugins\tymer\timerHandler.py:34
+msgid "{count} minutes"
+msgstr "{count} دقائق"
+
+#: addon\globalPlugins\tymer\timerHandler.py:36
+msgid "1 second"
+msgstr "ثانية واحدة"
+
+#: addon\globalPlugins\tymer\timerHandler.py:38
+msgid "{count} seconds"
+msgstr "{count} ثوانٍ"
+
+#: addon\globalPlugins\tymer\timerHandler.py:58
+msgid "Timer {index}"
+msgstr "المؤقت {index}"
+
+#: addon\globalPlugins\tymer\timerHandler.py:165
+msgid "{name} expired: {duration}."
+msgstr "انتهى وقت {name}: {duration}."
+
+#: addon\globalPlugins\tymer\timerHandler.py:203
+msgid "{name}: paused, {time}"
+msgstr "{name}: متوقف مؤقتاً عند {time}"
+
+#: addon\globalPlugins\tymer\timerHandler.py:206
+#: addon\globalPlugins\tymer\timerHandler.py:237
+msgid "{name}: stopped"
+msgstr "{name}: متوقف"
+
+#: addon\globalPlugins\tymer\timerHandler.py:212
+msgid "{name}: {time} remaining."
+msgstr "{name}: متبقٍ {time}."
+
+#: addon\globalPlugins\tymer\timerHandler.py:214
+msgid "{name}: paused at {time}. Press Shift+{index} to resume."
+msgstr "{name}: متوقف مؤقتاً عند {time}. اضغط Shift+{index} للاستئناف."
+
+#: addon\globalPlugins\tymer\timerHandler.py:221
+msgid "{name}: {duration}, stopped. Press {index} to start."
+msgstr "{name}: {duration}، متوقف. اضغط {index} للبدء."
+
+#: addon\globalPlugins\tymer\timerHandler.py:233
+msgid "{name}: paused"
+msgstr "{name}: متوقف مؤقتاً"
+
+#: addon\globalPlugins\tymer\durationDialog.py:22
+msgid "Set Timer {number} Duration"
+msgstr "تعيين مدة المؤقت {number}"
+
+#: addon\globalPlugins\tymer\durationDialog.py:28
+msgid "Timer &label (optional):"
+msgstr "ت&سمية المؤقت (اختياري):"
+
+#: addon\globalPlugins\tymer\durationDialog.py:39
+msgid "&Hours:"
+msgstr "ال&ساعات:"
+
+#: addon\globalPlugins\tymer\durationDialog.py:42
+msgid "&Minutes:"
+msgstr "ال&دقائق:"
+
+#: addon\globalPlugins\tymer\durationDialog.py:45
+msgid "&Seconds:"
+msgstr "ال&ثواني:"
+
+#: addon\globalPlugins\tymer\durationDialog.py:58
+msgid "Duration must be at least 1 second."
+msgstr "يجب أن تكون المدة ثانية واحدة على الأقل."
+
+#: addon\globalPlugins\tymer\durationDialog.py:59
+msgid "Error"
+msgstr "خطأ"
+
+#: addon\globalPlugins\tymer\settingsGUI.py:22
+msgid "Sound only"
+msgstr "صوت فقط"
+
+#: addon\globalPlugins\tymer\settingsGUI.py:23
+msgid "Speech only"
+msgstr "نطق فقط"
+
+#: addon\globalPlugins\tymer\settingsGUI.py:24
+msgid "Sound and speech"
+msgstr "صوت ونطق معاً"
+
+#: addon\globalPlugins\tymer\settingsGUI.py:28
+msgid "Beginner (descriptive)"
+msgstr "مبتدئ (إرشادات تفصيلية)"
+
+#: addon\globalPlugins\tymer\settingsGUI.py:29
+msgid "Advanced (concise)"
+msgstr "متقدم (أرقام مقتضبة)"
+
+#: addon\globalPlugins\tymer\settingsGUI.py:33
+msgid "Resume active countdowns"
+msgstr "استئناف المؤقتات النشطة"
+
+#: addon\globalPlugins\tymer\settingsGUI.py:34
+msgid "Reset all to stopped"
+msgstr "إيقاف وتصفير كافة المؤقتات"
+
+#: addon\globalPlugins\tymer\settingsGUI.py:35
+msgid "Keep countdowns paused"
+msgstr "إبقاء المؤقتات موقوفة مؤقتاً"
+
+#: addon\globalPlugins\tymer\settingsGUI.py:47
+msgid "Expiry notification &style:"
+msgstr "ن&مط التنبيه عند انتهاء المؤقت:"
+
+#: addon\globalPlugins\tymer\settingsGUI.py:51
+msgid "Speech &verbosity mode:"
+msgstr "م&ستوى الإسهاب النطقي:"
+
+#: addon\globalPlugins\tymer\settingsGUI.py:55
+msgid "&Play audio cue when entering command layer"
+msgstr "إ&صدار نغمة صوتية عند الدخول في طبقة الأوامر"
+
+#: addon\globalPlugins\tymer\settingsGUI.py:59
+msgid "Play &warning cue 10 seconds before expiration"
+msgstr "إصدار نغمة ت&حذيرية قبل انتهاء الوقت بـ 10 ثوانٍ"
+
+#: addon\globalPlugins\tymer\settingsGUI.py:64
+msgid "Behavior on NVDA &restart:"
+msgstr "السلوك عند إعادة &تشغيل NVDA:"
+
+#: addon\globalPlugins\tymer\settingsGUI.py:70
+msgid "Reset all timers to &factory durations"
+msgstr "استعادة المدد ال&أصلية لكافة المؤقتات"
+
+#: addon\globalPlugins\tymer\settingsGUI.py:84
+msgid ""
+"Are you sure you want to reset all timer durations to factory defaults?"
+msgstr ""
+"هل أنت متأكد من رغبتك في إعادة ضبط مدد كافة المؤقتات إلى الإعدادات الافتراضية؟"
+
+#: addon\globalPlugins\tymer\settingsGUI.py:87
+msgid "Confirm Reset"
+msgstr "تأكيد إعادة التعيين"
+
+#: addon\globalPlugins\tymer\settingsGUI.py:96
+msgid "Timer durations reset to factory defaults."
+msgstr "تمت استعادة المدد الافتراضية للمؤقتات بنجاح."
+
+#: addon\globalPlugins\tymer\settingsGUI.py:97
+msgid "Reset Complete"
+msgstr "اكتملت استعادة الضبط"
+
+#: addon\globalPlugins\tymer\durationDialog.py:100
+msgid "Set Quick Timer Duration"
+msgstr "ضبط مدة المؤقت السريع"
+
+#: addon\globalPlugins\tymer\timerHandler.py:183
+msgid "Quick timer"
+msgstr "المؤقت السريع"
+
+#: addon\globalPlugins\tymer\timerHandler.py:311
+#, python-brace-format
+msgid "{name}: paused at {time}. Press Shift+Q to resume."
+msgstr "{name}: متوقف مؤقتاً عند {time}. اضغط Shift+Q للاستئناف."
+
+#: addon\globalPlugins\tymer\timerHandler.py:314
+#, python-brace-format
+msgid "{name}: {duration}, stopped. Press Q to start."
+msgstr "{name}: {duration}، متوقف. اضغط Q للبدء."
+
+#: addon\globalPlugins\tymer\__init__.py:181
+msgid "Query or set quick timer"
+msgstr "استعلام أو ضبط المؤقت السريع"
+
+#: addon\globalPlugins\tymer\__init__.py:186
+msgid "Pause or resume quick timer"
+msgstr "تعليق أو استئناف المؤقت السريع"
+
+#: addon\globalPlugins\tymer\__init__.py:191
+msgid "Set duration for quick timer"
+msgstr "تعيين مدة المؤقت السريع"
+
+#: addon\globalPlugins\tymer\__init__.py:196
+msgid "Reset quick timer"
+msgstr "إلغاء المؤقت السريع وتصفيره"
