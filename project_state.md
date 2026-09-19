@@ -6,7 +6,7 @@
 
 ## 1. هوية المشروع والغرض
 - **الاسم**: Instant Timer (المؤقت الفوري)
-- **المسار**: `e:\GitHub\my workflows\addons\tymer`
+- **المسار**: `e:\GitHub\my workflows\addons\instantTimer`
 - **الوظيفة**: إضافة لقارئ الشاشة NVDA تُتيح 5 مؤقتات عد تنازلي مستقلة تُدار بنظام "طبقة أوامر فورية" (One-shot Command Layer).
 - **المطور**: كمال ياسر (Kamal Yaser <kamalyaser31@gmail.com>).
 - **الفلسفة الحاكمة**: البساطة التامة، عدم التعقيد، الكفاءة، والتوافق الصارم مع معايير الوصولية وقواعد Clean Code و Karpathy Guidelines:
