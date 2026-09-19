@@ -162,8 +162,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
                 ),
                 (
                     f"shift+{index}",
-                    self._makeSlotPauseResume(index),
-                    _("Pause or resume timer {0}").format(index),
+                    self._makeSlotReset(index),
+                    _("Reset timer {0}").format(index),
                 ),
                 (
                     f"control+{index}",
@@ -172,8 +172,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
                 ),
                 (
                     f"alt+{index}",
-                    self._makeSlotReset(index),
-                    _("Reset timer {0}").format(index),
+                    self._makeSlotPauseResume(index),
+                    _("Pause or resume timer {0}").format(index),
                 ),
             ]
         )
@@ -188,8 +188,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
                 ),
                 (
                     "shift+q",
-                    self._makeQuickTimerPauseResume(),
-                    _("Pause or resume quick timer"),
+                    self._makeQuickTimerReset(),
+                    _("Reset quick timer"),
                 ),
                 (
                     "control+q",
@@ -198,8 +198,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
                 ),
                 (
                     "alt+q",
-                    self._makeQuickTimerReset(),
-                    _("Reset quick timer"),
+                    self._makeQuickTimerPauseResume(),
+                    _("Pause or resume quick timer"),
                 ),
             ]
         )
@@ -214,8 +214,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
                 ),
                 (
                     "shift+s",
-                    self._makeStopwatchPauseResume(),
-                    _("Pause or resume stopwatch"),
+                    self._makeStopwatchReset(),
+                    _("Reset stopwatch to zero"),
                 ),
                 (
                     "control+s",
@@ -224,8 +224,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
                 ),
                 (
                     "alt+s",
-                    self._makeStopwatchReset(),
-                    _("Reset stopwatch to zero"),
+                    self._makeStopwatchPauseResume(),
+                    _("Pause or resume stopwatch"),
                 ),
             ]
         )

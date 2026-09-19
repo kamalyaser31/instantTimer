@@ -9,15 +9,15 @@
 - **One-Time Quick Timer (`Q`)**: Dedicated in-memory countdown timer for custom ad-hoc durations without modifying persistent presets. Pressing `Q` when stopped opens the setup dialog directly on minutes and starts immediately upon pressing Enter.
 - **Balanced Quad-Modifier Actions**:
   - `1` to `5`: Query current remaining time, or start countdown if stopped.
-  - `Shift+1` to `Shift+5`: Pause or resume countdown.
+  - `Shift+1` to `Shift+5`: Reset timer back to its initial configured duration.
   - `Control+1` to `Control+5`: Open duration configuration dialog (hours, minutes, seconds, and optional label).
-  - `Alt+1` to `Alt+5`: Reset timer back to its initial configured duration.
+  - `Alt+1` to `Alt+5`: Pause or resume countdown.
 - **Quick Timer Actions**:
   - `Q`: Query remaining quick timer (or open setup and start immediately if stopped).
-  - `Shift+Q`: Pause running quick timer / Resume paused quick timer.
+  - `Shift+Q`: Reset quick timer to stopped state and silence alarm.
   - `Control+Q`: Open quick duration setup dialog and start immediately upon confirmation.
-  - `Alt+Q`: Reset quick timer to stopped state and silence alarm.
-- **In-Memory Stopwatch (`S`)**: Instant count-up stopwatch with `S` (start/query), `Shift+S` (pause/resume), `Control+S` (restart), and `Alt+S` (reset).
+  - `Alt+Q`: Pause running quick timer / Resume paused quick timer.
+- **In-Memory Stopwatch (`S`)**: Instant count-up stopwatch with `S` (start/query), `Shift+S` (reset), `Control+S` (restart), and `Alt+S` (pause/resume).
 - **Auxiliary Layer Commands**:
   - `Space`: Immediately silence an active alarm audio.
   - `A`: Announce status summary for all 5 timer slots (and active quick timer).
@@ -41,17 +41,17 @@ Activate the command layer by pressing **`NVDA+Y`**. A brief subtle tone confirm
 | Key Combination | Action |
 | :--- | :--- |
 | `1` - `5` | Query remaining time (or start if stopped) |
-| `Shift` + `1` - `5` | Pause running timer / Resume paused timer |
+| `Shift` + `1` - `5` | Reset timer to original duration |
 | `Control` + `1` - `5` | Open duration setup dialog |
-| `Alt` + `1` - `5` | Reset timer to original duration |
+| `Alt` + `1` - `5` | Pause running timer / Resume paused timer |
 | `Q` | Query remaining quick timer (or open setup and start if stopped) |
-| `Shift` + `Q` | Pause running quick timer / Resume paused quick timer |
+| `Shift` + `Q` | Reset quick timer to stopped state and silence alarm |
 | `Control` + `Q` | Open quick duration setup dialog and start immediately |
-| `Alt` + `Q` | Reset quick timer to stopped state and silence alarm |
+| `Alt` + `Q` | Pause running quick timer / Resume paused quick timer |
 | `S` | Query elapsed stopwatch time (or start if stopped) |
-| `Shift` + `S` | Pause running stopwatch / Resume paused stopwatch |
+| `Shift` + `S` | Reset stopwatch to zero and stop |
 | `Control` + `S` | Restart stopwatch immediately from zero |
-| `Alt` + `S` | Reset stopwatch to zero and stop |
+| `Alt` + `S` | Pause running stopwatch / Resume paused stopwatch |
 | `Space` | Silence sounding alarm |
 | `A` | Report status of all timer slots |
 | `H` | Open help window in browse mode |

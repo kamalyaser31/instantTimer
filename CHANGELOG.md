@@ -2,7 +2,8 @@
 
 All notable changes to the Tymer add-on will be documented in this file.
 
-## [2026.1-dev] - 2026-09-17
+## [2026.1-dev] - 2026-09-19
+- feat(keys): swap Shift and Alt key actions across all command layers (presets 1-5, quick timer Q, stopwatch S): Shift now resets to stopped/zero, and Alt now pauses or resumes countdown/stopwatch.
 - docs(guard): resolved docs-guard finding by replacing missing `COPYING.txt` reference with official GNU GPL v2 URL across all documentation files and setting `addon_licenseURL` in `buildVars.py`.
 - release(addon): audited all translations, verified documentation parity across Arabic and English, added automated PO coverage test to run_tests.py (39 tests passing), and compiled final package `tymer-2026.1.nvda-addon` via SCons.
 - refactor(clean-code): comprehensive DRY purification across dialogs, gesture handlers, configuration readers, stopwatch re-execution, and SRP onOk extraction under clean-code-guard.

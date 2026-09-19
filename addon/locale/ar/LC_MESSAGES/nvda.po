@@ -200,8 +200,8 @@ msgid "{name}: {time} remaining."
 msgstr "{name}: متبقٍ {time}."
 
 #: addon\globalPlugins\tymer\timerHandler.py:214
-msgid "{name}: paused at {time}. Press Shift+{index} to resume."
-msgstr "{name}: متوقف مؤقتاً عند {time}. اضغط Shift+{index} للاستئناف."
+msgid "{name}: paused at {time}. Press Alt+{index} to resume."
+msgstr "{name}: متوقف مؤقتاً عند {time}. اضغط Alt+{index} للاستئناف."
 
 #: addon\globalPlugins\tymer\timerHandler.py:221
 msgid "{name}: {duration}, stopped. Press {index} to start."
@@ -323,8 +323,8 @@ msgstr "المؤقت السريع"
 
 #: addon\globalPlugins\tymer\timerHandler.py:311
 #, python-brace-format
-msgid "{name}: paused at {time}. Press Shift+Q to resume."
-msgstr "{name}: متوقف مؤقتاً عند {time}. اضغط Shift+Q للاستئناف."
+msgid "{name}: paused at {time}. Press Alt+Q to resume."
+msgstr "{name}: متوقف مؤقتاً عند {time}. اضغط Alt+Q للاستئناف."
 
 #: addon\globalPlugins\tymer\timerHandler.py:314
 #, python-brace-format

@@ -593,7 +593,13 @@ class TestQuickTimerBehavior(unittest.TestCase):
         qs.start()
         qs.pause()
         desc_paused = self.engine._getDescriptiveReport(qs)
-        self.assertIn("Press Shift+Q to resume", desc_paused)
+        self.assertIn("Press Alt+Q to resume", desc_paused)
+
+        s1 = self.engine.slots[0]
+        s1.start()
+        s1.pause()
+        desc_s1 = self.engine._getDescriptiveReport(s1)
+        self.assertIn("Press Alt+1 to resume", desc_s1)
 
     def test_quick_duration_dialog_ok_starts_countdown(self):
         dialog = QuickDurationDialog.__new__(QuickDurationDialog)
@@ -662,6 +668,38 @@ class TestQuickTimerBehavior(unittest.TestCase):
         reset_handler(None)
         self.assertEqual(self.engine.quickSlot.state, "stopped")
         self.engine.silenceAlarm.assert_called_once()
+
+    def test_shift_and_alt_swapped_layer_bindings(self):
+        plugin = GlobalPlugin.__new__(GlobalPlugin)
+        plugin.engine = self.engine
+        plugin._setupLayerGestures()
+
+        slot1 = self.engine.slots[0]
+        slot1.start()
+        plugin._gestureHandlers["alt+1"](None)
+        self.assertEqual(slot1.state, "paused")
+        plugin._gestureHandlers["alt+1"](None)
+        self.assertEqual(slot1.state, "running")
+        plugin._gestureHandlers["shift+1"](None)
+        self.assertEqual(slot1.state, "stopped")
+
+        qs = self.engine.quickSlot
+        qs.start()
+        plugin._gestureHandlers["alt+q"](None)
+        self.assertEqual(qs.state, "paused")
+        plugin._gestureHandlers["alt+q"](None)
+        self.assertEqual(qs.state, "running")
+        plugin._gestureHandlers["shift+q"](None)
+        self.assertEqual(qs.state, "stopped")
+
+        sw = self.engine.stopwatch
+        sw.start()
+        plugin._gestureHandlers["alt+s"](None)
+        self.assertEqual(sw.state, "paused")
+        plugin._gestureHandlers["alt+s"](None)
+        self.assertEqual(sw.state, "running")
+        plugin._gestureHandlers["shift+s"](None)
+        self.assertEqual(sw.state, "stopped")
 
 
 class TestPackageMetadataAndAssets(unittest.TestCase):

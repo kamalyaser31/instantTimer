@@ -314,14 +314,14 @@ class CountdownEngine:
             return _("{name}: {time} remaining.").format(name=name, time=remStr)
         if slot.index == 0:
             if slot.state == "paused":
-                return _("{name}: paused at {time}. Press Shift+Q to resume.").format(
+                return _("{name}: paused at {time}. Press Alt+Q to resume.").format(
                     name=name, time=remStr
                 )
             return _("{name}: {duration}, stopped. Press Q to start.").format(
                 name=name, duration=formatTime(slot.duration)
             )
         if slot.state == "paused":
-            return _("{name}: paused at {time}. Press Shift+{index} to resume.").format(
+            return _("{name}: paused at {time}. Press Alt+{index} to resume.").format(
                 name=name, time=remStr, index=slot.index
             )
         return _("{name}: {duration}, stopped. Press {index} to start.").format(
