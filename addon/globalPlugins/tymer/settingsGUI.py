@@ -57,9 +57,15 @@ class TymerSettingsPanel(SettingsPanel):
             wx.CheckBox(self, label=_("&Play audio cue when entering command layer")),
         )
         self.preExpiryCueCheckBox = sizerHelper.addItem(
-            wx.CheckBox(
-                self, label=_("Play &warning cue 10 seconds before expiration")
-            ),
+            wx.CheckBox(self, label=_("Play &warning cue before expiration")),
+        )
+        self.preExpiryCueCheckBox.Bind(wx.EVT_CHECKBOX, self._onTogglePreExpiryCue)
+        self.preExpirySecondsSpinCtrl = sizerHelper.addLabeledControl(
+            _("Warning cue &lead time in seconds:"),
+            wx.SpinCtrl,
+            min=1,
+            max=300,
+            initial=10,
         )
         self.restartPolicyChoice = sizerHelper.addLabeledControl(
             _("Behavior on NVDA &restart:"),
@@ -71,6 +77,9 @@ class TymerSettingsPanel(SettingsPanel):
         )
         self.resetDefaultsButton.Bind(wx.EVT_BUTTON, self.onResetDefaults)
 
+    def _onTogglePreExpiryCue(self, evt: wx.CommandEvent) -> None:
+        self.preExpirySecondsSpinCtrl.Enable(self.preExpiryCueCheckBox.GetValue())
+
     @staticmethod
     def _safeIndex(val: object, maxLen: int) -> int:
         try:
@@ -78,6 +87,14 @@ class TymerSettingsPanel(SettingsPanel):
             return idx if 0 <= idx < maxLen else 0
         except (ValueError, TypeError):
             return 0
+
+    @staticmethod
+    def _safeClamp(val: object, minVal: int, maxVal: int, default: int) -> int:
+        try:
+            intVal = int(val)
+            return max(minVal, min(maxVal, intVal))
+        except (ValueError, TypeError):
+            return default
 
     def _loadCurrentValues(self) -> None:
         conf = config.conf["tymer"]
@@ -91,7 +108,11 @@ class TymerSettingsPanel(SettingsPanel):
         )
 
         self.entryBeepCheckBox.SetValue(bool(conf.get("entryBeep", True)))
-        self.preExpiryCueCheckBox.SetValue(bool(conf.get("preExpiryCue", False)))
+        cueEnabled = bool(conf.get("preExpiryCue", False))
+        self.preExpiryCueCheckBox.SetValue(cueEnabled)
+        cueSeconds = self._safeClamp(conf.get("preExpirySeconds", 10), 1, 300, 10)
+        self.preExpirySecondsSpinCtrl.SetValue(cueSeconds)
+        self.preExpirySecondsSpinCtrl.Enable(cueEnabled)
 
         policy = str(conf.get("restartPolicy", "resume"))
         if policy in self._restartPolicyKeys:
@@ -144,5 +165,6 @@ class TymerSettingsPanel(SettingsPanel):
         conf["verbosity"] = self.verbosityChoice.GetSelection()
         conf["entryBeep"] = self.entryBeepCheckBox.GetValue()
         conf["preExpiryCue"] = self.preExpiryCueCheckBox.GetValue()
+        conf["preExpirySeconds"] = self.preExpirySecondsSpinCtrl.GetValue()
         selectedPolicyIndex = self.restartPolicyChoice.GetSelection()
         conf["restartPolicy"] = self._restartPolicyKeys[selectedPolicyIndex]

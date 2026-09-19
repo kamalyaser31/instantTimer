@@ -9,11 +9,11 @@ addon_info = AddonInfo(
     addon_name="tymer",
     addon_summary=_("Tymer"),
     addon_description=_(
-        """A modal command layer countdown timer add-on for NVDA providing 5 customizable timer slots with sound and speech alerts."""
+        """Countdown timers and stopwatch for NVDA with 5 preset timers, an ad-hoc quick timer, a modal command layer, and audio and speech alerts."""
     ),
     addon_version="2026.1",
     addon_changelog=_(
-        """- Version 2026.1: Initial release with 5-slot countdown timers, one-shot modal command layer, quad actions, and NVDA settings panel."""
+        """- Version 2026.1: Initial release with 5 preset countdown timers, quick timer, stopwatch, one-shot command layer, and settings panel."""
     ),
     addon_author="Kamal Yaser <kamalyaser31@gmail.com>",
     addon_url="https://github.com/kamalyaser31/tymer",

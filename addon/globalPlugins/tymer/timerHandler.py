@@ -235,7 +235,8 @@ class CountdownEngine:
             if slot.state != "running":
                 continue
             rem = slot.remaining()
-            if rem <= 10.0 and not slot.cueEmitted:
+            cueSec = float(self._getPreExpirySeconds())
+            if rem <= cueSec and not slot.cueEmitted:
                 if self._isPreExpiryCueEnabled():
                     tones.beep(550, 40)
                 slot.cueEmitted = True
@@ -260,6 +261,9 @@ class CountdownEngine:
 
     def _isPreExpiryCueEnabled(self) -> bool:
         return self._getBoolConfig("preExpiryCue", False)
+
+    def _getPreExpirySeconds(self) -> int:
+        return max(1, self._getIntConfig("preExpirySeconds", 10))
 
     def triggerAlarm(self, slot: TimerSlot) -> None:
         """Preempts ongoing alarms and announces expiry according to style."""

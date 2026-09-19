@@ -31,6 +31,7 @@ DEFAULT_CONFIG: Final = {
     "verbosity": 0,
     "entryBeep": True,
     "preExpiryCue": False,
+    "preExpirySeconds": 10,
     "restartPolicy": "resume",
     "defaultDurations": DEFAULT_DURATIONS,
     "slotLabels": DEFAULT_SLOT_LABELS,
@@ -42,6 +43,7 @@ confspec = {
     "verbosity": "integer(default=0)",
     "entryBeep": "boolean(default=True)",
     "preExpiryCue": "boolean(default=False)",
+    "preExpirySeconds": "integer(min=1, max=300, default=10)",
     "restartPolicy": "string(default='resume')",
     "defaultDurations": "int_list(default=list(300, 600, 900, 1500, 3600))",
     "slotLabels": "string_list(default=list('', '', '', '', ''))",
@@ -91,11 +93,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             "verbosity",
             "entryBeep",
             "preExpiryCue",
+            "preExpirySeconds",
             "restartPolicy",
         ):
             try:
                 conf[key]
-            except VdtTypeError:
+            except (KeyError, VdtTypeError):
                 validationFailed = True
                 conf.profiles[0][key] = DEFAULT_CONFIG[key]
         if validationFailed and config.conf["general"]["saveConfigurationOnExit"]:

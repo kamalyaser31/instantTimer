@@ -1,102 +1,71 @@
-# Tymer - Countdown Timer Add-on for NVDA
+# Tymer: countdown timer for NVDA
 
-**Tymer** is an accessible, efficient countdown timer add-on for the NVDA screen reader. It provides 5 independent countdown timer slots operated via a dedicated one-shot modal command layer.
+Tymer adds countdown timers and a stopwatch to the NVDA screen reader through a quick command layer (`NVDA+Y`). It includes five preset timers, an ad-hoc quick timer, and an in-memory stopwatch.
 
-## Key Features
+## Features
 
-- **One-Shot Modal Command Layer**: Triggered via `NVDA+Y`. The layer safely handles keypresses and automatically exits after command execution, preventing keyboard trapping.
-- **5 Independent Timer Slots**: Pre-configured with graduated defaults (5, 10, 15, 25, and 60 minutes).
-- **One-Time Quick Timer (`Q`)**: Dedicated in-memory countdown timer for custom ad-hoc durations without modifying persistent presets. Pressing `Q` when stopped opens the setup dialog directly on minutes and starts immediately upon pressing Enter.
-- **Balanced Quad-Modifier Actions**:
-  - `1` to `5`: Query current remaining time, or start countdown if stopped.
-  - `Shift+1` to `Shift+5`: Reset timer back to its initial configured duration.
-  - `Control+1` to `Control+5`: Open duration configuration dialog (hours, minutes, seconds, and optional label).
-  - `Alt+1` to `Alt+5`: Pause or resume countdown.
-- **Quick Timer Actions**:
-  - `Q`: Query remaining quick timer (or open setup and start immediately if stopped).
-  - `Shift+Q`: Reset quick timer to stopped state and silence alarm.
-  - `Control+Q`: Open quick duration setup dialog and start immediately upon confirmation.
-  - `Alt+Q`: Pause running quick timer / Resume paused quick timer.
-- **In-Memory Stopwatch (`S`)**: Instant count-up stopwatch with `S` (start/query), `Shift+S` (reset), `Control+S` (restart), and `Alt+S` (pause/resume).
-- **Auxiliary Layer Commands**:
-  - `Space`: Immediately silence an active alarm audio.
-  - `A`: Announce status summary for all 5 timer slots (and active quick timer).
-  - `H`: Open command reference in NVDA browse mode.
-  - `Escape`: Exit command layer silently.
-- **Audio & Speech Notifications**:
-  - Embedded wave alert (`alarm.wav`) on expiration (concise 1-second chime, automatically dismisses if not silenced).
-  - Pre-emptive alarm handling: a newly expired timer immediately interrupts and replaces an older playing alarm.
-  - Optional warning tone 10 seconds prior to expiration.
-  - Flexible notification styles: Sound only, Speech only, or Sound and speech.
-  - Dual verbosity modes: Beginner (descriptive instructions) and Advanced (concise numbers).
-- **Session Persistence**: Configurable behavior on NVDA restart (resume active countdowns, keep paused, or reset to stopped).
-- **Native Settings Panel**: Fully integrated into NVDA Settings dialog (`NVDA Menu -> Preferences -> Settings -> Tymer`).
+- **Modal command layer**: Press `NVDA+Y` to enter the layer. Pressing any layer key runs its action and immediately exits back to normal typing. Pressing an unassigned key beeps and exits.
+- **Five preset timers**: Pre-set to 5, 10, 15, 25, and 60 minutes. Durations and optional labels can be adjusted at any time.
+- **Quick timer (`Q`)**: An ad-hoc countdown timer that runs in memory without altering your five preset timers. Pressing `Q` when stopped opens the duration dialog focused on minutes; pressing Enter starts it immediately.
+- **Stopwatch (`S`)**: An in-memory count-up timer.
+- **Audible and spoken alerts**: Plays a 1-second wave chime on expiration and speaks the finished timer name. Includes an optional warning beep before expiration with configurable lead time.
+- **Session persistence**: Can restore, pause, or reset active timers when NVDA restarts.
+- **Settings panel**: Integrated directly into NVDA settings (`NVDA Menu > Preferences > Settings > Tymer`).
 
----
+## Command reference
 
-## Command Reference
+Press `NVDA+Y` to activate the layer. A short beep confirms entry if enabled in preferences. Then press one of the following keys:
 
-Activate the command layer by pressing **`NVDA+Y`**. A brief subtle tone confirms entry (if enabled in preferences). Then press any of the following keys:
-
-| Key Combination | Action |
+| Key | Action |
 | :--- | :--- |
-| `1` - `5` | Query remaining time (or start if stopped) |
-| `Shift` + `1` - `5` | Reset timer to original duration |
-| `Control` + `1` - `5` | Open duration setup dialog |
-| `Alt` + `1` - `5` | Pause running timer / Resume paused timer |
-| `Q` | Query remaining quick timer (or open setup and start if stopped) |
-| `Shift` + `Q` | Reset quick timer to stopped state and silence alarm |
-| `Control` + `Q` | Open quick duration setup dialog and start immediately |
-| `Alt` + `Q` | Pause running quick timer / Resume paused quick timer |
-| `S` | Query elapsed stopwatch time (or start if stopped) |
+| `1` to `5` | Check remaining time, or start if stopped |
+| `Shift` + `1` to `5` | Reset timer to original duration |
+| `Control` + `1` to `5` | Open duration and label dialog |
+| `Alt` + `1` to `5` | Pause or resume timer |
+| `Q` | Check quick timer (or open setup and start if stopped) |
+| `Shift` + `Q` | Reset quick timer and silence alarm |
+| `Control` + `Q` | Open quick timer duration dialog and start immediately |
+| `Alt` + `Q` | Pause or resume quick timer |
+| `S` | Check elapsed stopwatch time, or start if stopped |
 | `Shift` + `S` | Reset stopwatch to zero and stop |
-| `Control` + `S` | Restart stopwatch immediately from zero |
-| `Alt` + `S` | Pause running stopwatch / Resume paused stopwatch |
+| `Control` + `S` | Restart stopwatch from zero |
+| `Alt` + `S` | Pause or resume stopwatch |
 | `Space` | Silence sounding alarm |
-| `A` | Report status of all timer slots |
+| `A` | Report status of all timers |
 | `H` | Open help window in browse mode |
-| `Escape` | Cancel and exit layer |
+| `Escape` | Exit command layer |
 
-*Note: Pressing an unassigned key inside the layer emits a low error tone and immediately releases keyboard control.*
-
----
+Pressing an unassigned key plays a low error tone and releases keyboard control immediately.
 
 ## Configuration
 
-To customize Tymer preferences, open **NVDA Menu -> Preferences -> Settings** and select **Tymer**:
+Open **NVDA Menu > Preferences > Settings** and select **Tymer**:
 
-1. **Expiry notification style**: Choose between *Sound only*, *Speech only*, or *Sound and speech*.
-2. **Speech verbosity mode**: Choose *Beginner (descriptive)* for step-by-step modifier guidance, or *Advanced (concise)* for quick time readouts.
-3. **Play audio cue when entering command layer**: Toggle the entry tone on `NVDA+Y`.
-4. **Play warning cue 10 seconds before expiration**: Toggle a warning beep at 10 seconds remaining.
-5. **Behavior on NVDA restart**: Select how ongoing timers behave across NVDA restarts (*Resume active countdowns*, *Reset all to stopped*, or *Keep countdowns paused*).
-6. **Reset all timers to factory durations**: Restore all 5 slots to default durations (5, 10, 15, 25, 60 minutes) and clear custom labels.
-
----
+1. **Expiry notification style**: Sound only, Speech only, or Sound and speech.
+2. **Speech verbosity mode**: Beginner (descriptive guidance) or Advanced (concise numbers).
+3. **Play audio cue when entering command layer**: Plays an entry tone on `NVDA+Y`.
+4. **Play warning cue before expiration**: Plays a warning beep before a countdown reaches zero.
+5. **Warning cue lead time in seconds**: The lead time before expiration (1 to 300 seconds, default: 10) when the warning sounds.
+6. **Behavior on NVDA restart**: Resume active countdowns, reset all to stopped, or keep countdowns paused.
+7. **Reset all timers to factory durations**: Resets all five timers to default durations (5, 10, 15, 25, 60 minutes) and clears custom labels.
 
 ## Compatibility
 
-- Minimum NVDA Version: **2024.1**
-- Last Tested NVDA Version: **2026.2**
-- Operating System: Windows 10 / Windows 11
-
----
+- Minimum NVDA version: 2024.1
+- Last tested NVDA version: 2026.2
+- Operating system: Windows 10 / Windows 11
 
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for version release notes and project history.
 
----
-
-## Developer & Support
+## Developer and support
 
 Developed by **Kamal Yaser** (كمال ياسر):
 
-- **Email**: [kamalyaser31@gmail.com](mailto:kamalyaser31@gmail.com)
-- **Telegram**: [@kamalyaser31](https://t.me/kamalyaser31)
-- **Repository**: [https://github.com/kamalyaser31/tymer](https://github.com/kamalyaser31/tymer)
-
----
+- Email: [kamalyaser31@gmail.com](mailto:kamalyaser31@gmail.com)
+- Telegram: [@kamalyaser31](https://t.me/kamalyaser31)
+- Repository: [https://github.com/kamalyaser31/tymer](https://github.com/kamalyaser31/tymer)
 
 ## License
 

@@ -3,6 +3,7 @@
 All notable changes to the Tymer add-on will be documented in this file.
 
 ## [2026.1-dev] - 2026-09-19
+- feat(settings): configure warning cue lead time in seconds (1-300s, default 10) from NVDA settings panel with dynamic toggle, and apply humanizer purification to all project prose and Arabic translations.
 - feat(keys): swap Shift and Alt key actions across all command layers (presets 1-5, quick timer Q, stopwatch S): Shift now resets to stopped/zero, and Alt now pauses or resumes countdown/stopwatch.
 - docs(guard): resolved docs-guard finding by replacing missing `COPYING.txt` reference with official GNU GPL v2 URL across all documentation files and setting `addon_licenseURL` in `buildVars.py`.
 - release(addon): audited all translations, verified documentation parity across Arabic and English, added automated PO coverage test to run_tests.py (39 tests passing), and compiled final package `tymer-2026.1.nvda-addon` via SCons.

@@ -44,6 +44,7 @@ mock_config.conf = MockConf(
                 "verbosity": 0,
                 "entryBeep": True,
                 "preExpiryCue": False,
+                "preExpirySeconds": 10,
                 "restartPolicy": "resume",
                 "defaultDurations": [300, 600, 900, 1500, 3600],
                 "slotLabels": ["", "", "", "", ""],
@@ -287,12 +288,45 @@ class TestCountdownEngineBehavior(unittest.TestCase):
     def test_tick_emits_warning_cue_at_ten_seconds_when_enabled(self):
         mock_tones.beep.reset_mock()
         mock_config.conf["tymer"]["preExpiryCue"] = True
+        mock_config.conf["tymer"]["preExpirySeconds"] = 10
         slot = self.engine.slots[1]
         slot.start()
         slot.targetTime = time.time() + 8.0
         self.engine._onTick()
         self.assertTrue(slot.cueEmitted)
         mock_tones.beep.assert_called_with(550, 40)
+
+    def test_tick_emits_warning_cue_at_custom_lead_time_when_enabled(self):
+        mock_tones.beep.reset_mock()
+        mock_config.conf["tymer"]["preExpiryCue"] = True
+        mock_config.conf["tymer"]["preExpirySeconds"] = 30
+        slot = self.engine.slots[1]
+        slot.start()
+        slot.targetTime = time.time() + 25.0
+        self.engine._onTick()
+        self.assertTrue(slot.cueEmitted)
+        mock_tones.beep.assert_called_with(550, 40)
+
+    def test_tick_does_not_emit_warning_cue_when_remaining_exceeds_lead_time(self):
+        mock_tones.beep.reset_mock()
+        mock_config.conf["tymer"]["preExpiryCue"] = True
+        mock_config.conf["tymer"]["preExpirySeconds"] = 10
+        slot = self.engine.slots[1]
+        slot.start()
+        slot.targetTime = time.time() + 25.0
+        self.engine._onTick()
+        self.assertFalse(slot.cueEmitted)
+        mock_tones.beep.assert_not_called()
+
+    def test_get_pre_expiry_seconds_returns_configured_value_and_respects_minimum(self):
+        mock_config.conf["tymer"]["preExpirySeconds"] = 45
+        self.assertEqual(self.engine._getPreExpirySeconds(), 45)
+        mock_config.conf["tymer"]["preExpirySeconds"] = 0
+        self.assertEqual(self.engine._getPreExpirySeconds(), 1)
+        mock_config.conf["tymer"]["preExpirySeconds"] = -5
+        self.assertEqual(self.engine._getPreExpirySeconds(), 1)
+        mock_config.conf["tymer"]["preExpirySeconds"] = "invalid"
+        self.assertEqual(self.engine._getPreExpirySeconds(), 10)
 
     def test_status_reports_switch_between_beginner_and_advanced_formats(self):
         slot = self.engine.slots[0]
@@ -438,6 +472,9 @@ class TestPluginConfigurationAndSession(unittest.TestCase):
         self.plugin._validateConfiguration()
         self.assertEqual(
             corrupt["notificationStyle"], DEFAULT_CONFIG["notificationStyle"]
+        )
+        self.assertEqual(
+            corrupt["preExpirySeconds"], DEFAULT_CONFIG["preExpirySeconds"]
         )
 
     def test_restore_session_state_with_resume_and_pause_policies(self):
