@@ -1,4 +1,4 @@
-# مهام مشروع إضافة Tymer لـ NVDA
+# مهام مشروع إضافة Instant Timer لـ NVDA
 
 حالة المشروع الإجمالية: **اكتملت مرحلة البناء البرمجي والتوثيق والاختبارات الآلية (Implementation & Verification Complete)**.
 

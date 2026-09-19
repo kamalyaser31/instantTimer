@@ -1,11 +1,11 @@
-# حالة مشروع إضافة Tymer لـ NVDA (Project State)
+# حالة مشروع إضافة Instant Timer لـ NVDA (Project State)
 
 > **تنبيه للوكيل التالي**: هذا الملف يُلخّص كل ما تم إنجازه وتقريضه في جلسة التخطيط، فلا داعي لإعادة استجواب المستخدم أو إعادة تصفح الكود المرجعي؛ ابدأ التنفيذ مباشرة من المخطط التنفيذي [docs/blueprint.md](file:///e:/GitHub/my%20workflows/addons/tymer/docs/blueprint.md).
 
 ---
 
 ## 1. هوية المشروع والغرض
-- **الاسم**: Tymer
+- **الاسم**: Instant Timer (المؤقت الفوري)
 - **المسار**: `e:\GitHub\my workflows\addons\tymer`
 - **الوظيفة**: إضافة لقارئ الشاشة NVDA تُتيح 5 مؤقتات عد تنازلي مستقلة تُدار بنظام "طبقة أوامر فورية" (One-shot Command Layer).
 - **المطور**: كمال ياسر (Kamal Yaser <kamalyaser31@gmail.com>).

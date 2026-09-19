@@ -1,6 +1,6 @@
-# Tymer
+# Instant Timer
 
-Tymer is an NVDA screen reader add-on providing five independent, customizable countdown timers operated through a dedicated modal command layer, engineered on principles of simplicity and non-complexity.
+Instant Timer is an NVDA screen reader add-on providing five independent, customizable countdown timers operated through a dedicated modal command layer, engineered on principles of simplicity and non-complexity.
 
 ## Language
 
@@ -9,7 +9,7 @@ A temporary modal input state entered via a designated gesture, in which numeric
 _Avoid_: Hotkey mode, sub-menu, layer state
 
 **Layer Trigger**:
-The global NVDA shortcut (`NVDA+Y`) that transitions the input subsystem into the Command Layer.
+The global NVDA shortcut (`NVDA+E`) that transitions the input subsystem into the Command Layer.
 _Avoid_: Activation key, master hotkey
 
 **Countdown Timer**:
@@ -61,5 +61,5 @@ The configurable policy determining whether active countdowns resume, reset, or 
 _Avoid_: Session recovery, reload behavior
 
 **Settings Panel**:
-A dedicated preferences category registered under NVDA Settings allowing full graphical configuration of Tymer.
+A dedicated preferences category registered under NVDA Settings allowing full graphical configuration of Instant Timer.
 _Avoid_: Options page, config window
