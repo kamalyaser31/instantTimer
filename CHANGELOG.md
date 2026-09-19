@@ -2,7 +2,8 @@
 
 All notable changes to the Instant Timer add-on will be documented in this file.
 
-## [2026.1-dev] - 2026-09-19
+## [2026.1] - 2026-09-19
+- release(v2026.1): published official release v2026.1 on GitHub with compiled `instantTimer-2026.1.nvda-addon` asset and English release notes.
 - fix(core): remediate clean-code-guard and test-guard audit findings: fix entryBeep config lookup in __init__.py, guard secure desktop mode, support debugWarning in fallback logger, qualify plugin module matching, purge mock illusions from run_tests.py, and expand behavioral tests to 48 passing tests (100% green).
 - feat(config): migrate settings, durations, and session persistence to standalone local JSON config (`config.json`) following instantAccess pattern, verified with 44 passing unit tests under clean-code-guard.
 - refactor(project): rename add-on to Instant Timer (`instantTimer`, `المؤقت الفوري`), change layer shortcut to `NVDA+E`, update configuration namespace to `instantTimer`, and package `instantTimer-2026.1.nvda-addon`.
