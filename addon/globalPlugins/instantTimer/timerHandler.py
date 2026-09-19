@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
-# Tymer Add-on for NVDA
+# Instant Timer Add-on for NVDA
 # Author: Kamal Yaser <kamalyaser31@gmail.com>
 
 import time
-from typing import Optional, List, Callable, Tuple
+from typing import Optional, List, Callable, Tuple, Any, Dict
 import wx
 import ui
 import nvwave
 import tones
-import config
 import addonHandler
 from . import paths
 
@@ -177,10 +176,21 @@ class CountdownEngine:
         lbl = defaultLabels[i] if i < len(defaultLabels) else ""
         return dur, lbl
 
-    def __init__(self, defaultDurations: List[int], defaultLabels: List[str]):
+    def __init__(
+        self,
+        defaultDurations: Optional[List[int]] = None,
+        defaultLabels: Optional[List[str]] = None,
+        conf: Optional[Dict[str, Any]] = None,
+    ):
+        self.conf = conf if isinstance(conf, dict) else {}
+        durations = (
+            defaultDurations or self.conf.get("defaultDurations") or DEFAULT_DURATIONS
+        )
+        labels = defaultLabels or self.conf.get("slotLabels") or DEFAULT_SLOT_LABELS
+
         self.slots: List[TimerSlot] = []
         for i in range(5):
-            dur, lbl = self._slotConfig(i, defaultDurations, defaultLabels)
+            dur, lbl = self._slotConfig(i, durations, labels)
             self.slots.append(TimerSlot(index=i + 1, duration=dur, label=lbl))
 
         self.quickSlot = TimerSlot(index=0, duration=300, label=_("Quick timer"))
@@ -195,8 +205,6 @@ class CountdownEngine:
         self.silenceAlarm()
         if self._ticker.IsRunning():
             self._ticker.Stop()
-        del self._ticker
-        del self._alarmAutoStopTimer
 
     def _ensureTicker(self) -> None:
         """Runs ticker only when at least one countdown slot is actively running."""
@@ -213,12 +221,16 @@ class CountdownEngine:
         self._ensureTicker()
 
     def resetToDefaults(
-        self, defaultDurations: List[int], defaultLabels: List[str]
+        self,
+        defaultDurations: Optional[List[int]] = None,
+        defaultLabels: Optional[List[str]] = None,
     ) -> None:
         """Resets all slots to factory durations and labels in stopped state."""
         self.silenceAlarm()
+        durations = defaultDurations or DEFAULT_DURATIONS
+        labels = defaultLabels or DEFAULT_SLOT_LABELS
         for i, slot in enumerate(self.slots):
-            dur, lbl = self._slotConfig(i, defaultDurations, defaultLabels)
+            dur, lbl = self._slotConfig(i, durations, labels)
             slot.setDuration(dur, lbl)
         self.quickSlot.reset()
         self._ensureTicker()
@@ -245,25 +257,14 @@ class CountdownEngine:
                 slot.reset()
         self._ensureTicker()
 
-    @staticmethod
-    def _getIntConfig(key: str, default: int = 0) -> int:
-        try:
-            return int(config.conf["tymer"][key])
-        except (KeyError, ValueError, TypeError):
-            return default
-
-    @staticmethod
-    def _getBoolConfig(key: str, default: bool = False) -> bool:
-        try:
-            return bool(config.conf["tymer"][key])
-        except (KeyError, TypeError):
-            return default
-
     def _isPreExpiryCueEnabled(self) -> bool:
-        return self._getBoolConfig("preExpiryCue", False)
+        return bool(self.conf.get("preExpiryCue", False))
 
     def _getPreExpirySeconds(self) -> int:
-        return max(1, self._getIntConfig("preExpirySeconds", 10))
+        try:
+            return max(1, int(self.conf.get("preExpirySeconds", 10)))
+        except (ValueError, TypeError):
+            return 10
 
     def triggerAlarm(self, slot: TimerSlot) -> None:
         """Preempts ongoing alarms and announces expiry according to style."""
@@ -290,7 +291,10 @@ class CountdownEngine:
             self._alarmAutoStopTimer.Stop()
 
     def _getNotificationStyle(self) -> int:
-        return self._getIntConfig("notificationStyle", 0)
+        try:
+            return int(self.conf.get("notificationStyle", 0))
+        except (ValueError, TypeError):
+            return 0
 
     def getStatusReport(self, slot: TimerSlot) -> str:
         """Generates localized speech output for a slot according to verbosity."""
@@ -300,7 +304,10 @@ class CountdownEngine:
         return self._getDescriptiveReport(slot)
 
     def _getVerbosity(self) -> int:
-        return self._getIntConfig("verbosity", 0)
+        try:
+            return int(self.conf.get("verbosity", 0))
+        except (ValueError, TypeError):
+            return 0
 
     def _getConciseReport(self, slot: TimerSlot) -> str:
         name = slot.displayName()

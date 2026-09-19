@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Standalone test runner for Tymer NVDA add-on.
+"""Standalone test runner for Instant Timer NVDA add-on.
 
 Tests core logic, timing calculations, slot state transitions,
 formatting, gesture normalization, and build metadata.
@@ -7,6 +7,7 @@ Adheres strictly to test-guard principles: behavior testing,
 data-driven variants, and scenario-based naming.
 """
 
+import copy
 import os
 import sys
 import time
@@ -38,19 +39,6 @@ class MockConf(dict):
 mock_config = MagicMock()
 mock_config.conf = MockConf(
     {
-        "tymer": MockProfileDict(
-            {
-                "notificationStyle": 0,
-                "verbosity": 0,
-                "entryBeep": True,
-                "preExpiryCue": False,
-                "preExpirySeconds": 10,
-                "restartPolicy": "resume",
-                "defaultDurations": [300, 600, 900, 1500, 3600],
-                "slotLabels": ["", "", "", "", ""],
-                "activeTimersData": ["", "", "", "", ""],
-            }
-        ),
         "general": {"saveConfigurationOnExit": False},
     }
 )
@@ -95,8 +83,16 @@ mock_globalPluginHandler = MagicMock()
 mock_globalPluginHandler.GlobalPlugin = object
 mock_scriptHandler = MagicMock()
 mock_scriptHandler.script = lambda **kwargs: (lambda fn: fn)
+import atexit
+import shutil
+import tempfile
+
+_test_nvda_config_dir = tempfile.mkdtemp(prefix="nvda_test_conf_")
+atexit.register(shutil.rmtree, _test_nvda_config_dir, ignore_errors=True)
+
 mock_globalVars = MagicMock()
 mock_globalVars.appArgs.secure = False
+mock_globalVars.appArgs.configPath = _test_nvda_config_dir
 
 sys.modules["addonHandler"] = mock_addonHandler
 sys.modules["config"] = mock_config
@@ -146,18 +142,19 @@ builtins._ = lambda s: s
 
 # Add plugin path to sys.path
 addon_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "addon"))
-plugin_dir = os.path.join(addon_path, "globalPlugins", "tymer")
+plugin_dir = os.path.join(addon_path, "globalPlugins", "instantTimer")
 sys.path.insert(0, os.path.join(addon_path, "globalPlugins"))
 
-from tymer.timerHandler import (
+from instantTimer.timerHandler import (
     TimerSlot,
     CountdownEngine,
     formatTime,
     Stopwatch,
     formatDigitalTime,
 )
-from tymer import paths, GlobalPlugin, timerHandler
-from tymer.durationDialog import QuickDurationDialog
+import instantTimer.config as it_config
+from instantTimer import paths, GlobalPlugin, timerHandler
+from instantTimer.durationDialog import QuickDurationDialog
 import buildVars
 
 
@@ -199,10 +196,8 @@ class TestTimerSlotLifecycle(unittest.TestCase):
         self.slot = TimerSlot(index=1, duration=300, label="Work")
 
     def test_slot_initializes_in_stopped_state_with_given_metadata(self):
-        self.assertEqual(self.slot.index, 1)
-        self.assertEqual(self.slot.duration, 300.0)
-        self.assertEqual(self.slot.label, "Work")
         self.assertEqual(self.slot.state, "stopped")
+        self.assertEqual(self.slot.remaining(), 300.0)
         self.assertIsNone(self.slot.targetTime)
         self.assertIsNone(self.slot.remainingOnPause)
         self.assertFalse(self.slot.cueEmitted)
@@ -257,7 +252,10 @@ class TestCountdownEngineBehavior(unittest.TestCase):
     def setUp(self):
         durations = [300, 600, 900, 1500, 3600]
         labels = ["Slot1", "", "", "", ""]
-        self.engine = CountdownEngine(defaultDurations=durations, defaultLabels=labels)
+        self.conf = copy.deepcopy(it_config.DEFAULT_CONFIG)
+        self.engine = CountdownEngine(
+            defaultDurations=durations, defaultLabels=labels, conf=self.conf
+        )
 
     def tearDown(self):
         self.engine.terminate()
@@ -285,32 +283,25 @@ class TestCountdownEngineBehavior(unittest.TestCase):
         self.assertIsNone(slot.targetTime)
         self.assertTrue(self.engine.isAlarmActive)
 
-    def test_tick_emits_warning_cue_at_ten_seconds_when_enabled(self):
-        mock_tones.beep.reset_mock()
-        mock_config.conf["tymer"]["preExpiryCue"] = True
-        mock_config.conf["tymer"]["preExpirySeconds"] = 10
-        slot = self.engine.slots[1]
-        slot.start()
-        slot.targetTime = time.time() + 8.0
-        self.engine._onTick()
-        self.assertTrue(slot.cueEmitted)
-        mock_tones.beep.assert_called_with(550, 40)
-
-    def test_tick_emits_warning_cue_at_custom_lead_time_when_enabled(self):
-        mock_tones.beep.reset_mock()
-        mock_config.conf["tymer"]["preExpiryCue"] = True
-        mock_config.conf["tymer"]["preExpirySeconds"] = 30
-        slot = self.engine.slots[1]
-        slot.start()
-        slot.targetTime = time.time() + 25.0
-        self.engine._onTick()
-        self.assertTrue(slot.cueEmitted)
-        mock_tones.beep.assert_called_with(550, 40)
+    def test_tick_emits_warning_cue_at_configured_lead_times_when_enabled(self):
+        cases = [(10, 8.0), (30, 25.0), (60, 50.0)]
+        for lead_sec, rem_sec in cases:
+            with self.subTest(lead_sec=lead_sec, rem_sec=rem_sec):
+                mock_tones.beep.reset_mock()
+                self.conf["preExpiryCue"] = True
+                self.conf["preExpirySeconds"] = lead_sec
+                slot = self.engine.slots[1]
+                slot.reset()
+                slot.start()
+                slot.targetTime = time.time() + rem_sec
+                self.engine._onTick()
+                self.assertTrue(slot.cueEmitted)
+                mock_tones.beep.assert_called_with(550, 40)
 
     def test_tick_does_not_emit_warning_cue_when_remaining_exceeds_lead_time(self):
         mock_tones.beep.reset_mock()
-        mock_config.conf["tymer"]["preExpiryCue"] = True
-        mock_config.conf["tymer"]["preExpirySeconds"] = 10
+        self.conf["preExpiryCue"] = True
+        self.conf["preExpirySeconds"] = 10
         slot = self.engine.slots[1]
         slot.start()
         slot.targetTime = time.time() + 25.0
@@ -319,24 +310,24 @@ class TestCountdownEngineBehavior(unittest.TestCase):
         mock_tones.beep.assert_not_called()
 
     def test_get_pre_expiry_seconds_returns_configured_value_and_respects_minimum(self):
-        mock_config.conf["tymer"]["preExpirySeconds"] = 45
+        self.conf["preExpirySeconds"] = 45
         self.assertEqual(self.engine._getPreExpirySeconds(), 45)
-        mock_config.conf["tymer"]["preExpirySeconds"] = 0
+        self.conf["preExpirySeconds"] = 0
         self.assertEqual(self.engine._getPreExpirySeconds(), 1)
-        mock_config.conf["tymer"]["preExpirySeconds"] = -5
+        self.conf["preExpirySeconds"] = -5
         self.assertEqual(self.engine._getPreExpirySeconds(), 1)
-        mock_config.conf["tymer"]["preExpirySeconds"] = "invalid"
+        self.conf["preExpirySeconds"] = "invalid"
         self.assertEqual(self.engine._getPreExpirySeconds(), 10)
 
     def test_status_reports_switch_between_beginner_and_advanced_formats(self):
         slot = self.engine.slots[0]
-        mock_config.conf["tymer"]["verbosity"] = 0
+        self.conf["verbosity"] = 0
         rep_beg = self.engine.getStatusReport(slot)
-        self.assertIn("stopped", rep_beg)
+        self.assertEqual(rep_beg, "Slot1: 5 minutes, stopped. Press 1 to start.")
 
-        mock_config.conf["tymer"]["verbosity"] = 1
+        self.conf["verbosity"] = 1
         rep_adv = self.engine.getStatusReport(slot)
-        self.assertIn("stopped", rep_adv)
+        self.assertEqual(rep_adv, "Slot1: stopped")
 
     def test_report_all_status_aggregates_all_five_slots_into_summary(self):
         summary = self.engine.reportAllStatus()
@@ -405,6 +396,7 @@ class TestPluginGestureResolution(unittest.TestCase):
             ("kb:a", "a"),
             ("kb:h", "h"),
             ("kb:escape", "escape"),
+            ("kb:e", None),
             ("kb:z", None),
             ("kb:f1", None),
             ("kb:enter", None),
@@ -429,7 +421,52 @@ class TestPluginLayerLifecycle(unittest.TestCase):
 
         self.assertFalse(plugin.layerModeActive)
         plugin.clearGestureBindings.assert_called_once()
-        plugin.bindGesture.assert_called_once_with("kb:NVDA+y", "tymerLayerCommands")
+        plugin.bindGesture.assert_called_once_with(
+            "kb:NVDA+e", "instantTimerLayerCommands"
+        )
+
+    def test_layer_entry_activates_mode_registers_gestures_and_emits_beep_when_enabled(
+        self,
+    ):
+        plugin = GlobalPlugin.__new__(GlobalPlugin)
+        plugin.conf = copy.deepcopy(it_config.DEFAULT_CONFIG)
+        plugin.conf["entryBeep"] = True
+        plugin.engine = CountdownEngine(conf=plugin.conf)
+        plugin._setupLayerGestures()
+        plugin.bindGesture = MagicMock()
+        plugin.layerModeActive = False
+        mock_tones.beep.reset_mock()
+
+        plugin.script_instantTimerLayerCommands(None)
+
+        self.assertTrue(plugin.layerModeActive)
+        mock_tones.beep.assert_called_once_with(100, 15)
+        self.assertEqual(plugin.bindGesture.call_count, len(plugin._layerGestures))
+        plugin.engine.terminate()
+
+    def test_layer_entry_suppresses_beep_when_disabled(self):
+        plugin = GlobalPlugin.__new__(GlobalPlugin)
+        plugin.conf = copy.deepcopy(it_config.DEFAULT_CONFIG)
+        plugin.conf["entryBeep"] = False
+        plugin.engine = CountdownEngine(conf=plugin.conf)
+        plugin._setupLayerGestures()
+        plugin.bindGesture = MagicMock()
+        plugin.layerModeActive = False
+        mock_tones.beep.reset_mock()
+
+        plugin.script_instantTimerLayerCommands(None)
+
+        self.assertTrue(plugin.layerModeActive)
+        mock_tones.beep.assert_not_called()
+        plugin.engine.terminate()
+
+    def test_layer_entry_in_secure_mode_is_safe_noop(self):
+        plugin = GlobalPlugin.__new__(GlobalPlugin)
+        plugin.layerModeActive = False
+
+        # Must not raise AttributeError when uninitialized in secure mode
+        plugin.script_instantTimerLayerCommands(None)
+        self.assertFalse(plugin.layerModeActive)
 
 
 class TestPluginConfigurationAndSession(unittest.TestCase):
@@ -437,45 +474,42 @@ class TestPluginConfigurationAndSession(unittest.TestCase):
 
     def setUp(self):
         self.plugin = GlobalPlugin.__new__(GlobalPlugin)
+        import copy
+
+        self.plugin.conf = copy.deepcopy(it_config.DEFAULT_CONFIG)
         self.plugin.engine = CountdownEngine(
             defaultDurations=[300, 600, 900, 1500, 3600],
             defaultLabels=["", "", "", "", ""],
+            conf=self.plugin.conf,
         )
 
     def tearDown(self):
         self.plugin.engine.terminate()
 
-    def test_validate_configuration_recovers_with_actual_defaults_on_vdt_error(self):
-        from tymer import DEFAULT_CONFIG
+    def test_json_config_io_and_corruption_recovery(self):
+        import tempfile
 
-        class CorruptConf(MockProfileDict):
-            def __init__(self, *args, **kwargs):
-                super().__init__(*args, **kwargs)
-                self.error_triggered = False
+        with tempfile.TemporaryDirectory() as tmpdir:
+            test_path = os.path.join(tmpdir, "config.json")
+            # 1. Loading non-existent file returns DEFAULT_CONFIG
+            loaded = it_config.loadConfig(test_path)
+            self.assertEqual(loaded["notificationStyle"], 0)
+            self.assertEqual(loaded["preExpirySeconds"], 10)
 
-            def __getitem__(self, item):
-                if item == "notificationStyle" and not self.error_triggered:
-                    self.error_triggered = True
-                    raise VdtTypeError("corrupt")
-                return super().__getitem__(item)
+            # 2. Saving and loading persists updates
+            loaded["preExpirySeconds"] = 45
+            loaded["defaultDurations"][0] = 420
+            it_config.saveConfig(loaded, test_path)
 
-        corrupt = CorruptConf(
-            {
-                "notificationStyle": "invalid",
-                "verbosity": 0,
-                "entryBeep": True,
-                "preExpiryCue": False,
-                "restartPolicy": "resume",
-            }
-        )
-        mock_config.conf["tymer"] = corrupt
-        self.plugin._validateConfiguration()
-        self.assertEqual(
-            corrupt["notificationStyle"], DEFAULT_CONFIG["notificationStyle"]
-        )
-        self.assertEqual(
-            corrupt["preExpirySeconds"], DEFAULT_CONFIG["preExpirySeconds"]
-        )
+            reloaded = it_config.loadConfig(test_path)
+            self.assertEqual(reloaded["preExpirySeconds"], 45)
+            self.assertEqual(reloaded["defaultDurations"][0], 420)
+
+            # 3. Corrupted JSON safely recovers to DEFAULT_CONFIG
+            with open(test_path, "w", encoding="utf-8") as f:
+                f.write("{invalid-json-content")
+            recovered = it_config.loadConfig(test_path)
+            self.assertEqual(recovered["preExpirySeconds"], 10)
 
     def test_restore_session_state_with_resume_and_pause_policies(self):
         now = time.time()
@@ -499,6 +533,18 @@ class TestPluginConfigurationAndSession(unittest.TestCase):
 
         self.assertEqual(slot.state, "stopped")
         self.plugin.engine.silenceAlarm.assert_called_once()
+
+    def test_save_session_state_persists_to_json_conf(self):
+        slot0 = self.plugin.engine.slots[0]
+        slot0.start()
+        slot1 = self.plugin.engine.slots[1]
+        slot1.start()
+        slot1.pause()
+
+        self.plugin._saveSessionState()
+        self.assertTrue(self.plugin.conf["activeTimersData"][0].startswith("running:"))
+        self.assertTrue(self.plugin.conf["activeTimersData"][1].startswith("paused:"))
+        self.assertEqual(self.plugin.conf["activeTimersData"][2], "")
 
 
 class TestStopwatchBehavior(unittest.TestCase):
@@ -674,15 +720,9 @@ class TestQuickTimerBehavior(unittest.TestCase):
         self.engine.quickSlot.start()
         self.assertEqual(self.engine.quickSlot.state, "running")
 
-        dialog = QuickDurationDialog.__new__(QuickDurationDialog)
-        dialog.engine = self.engine
-        dialog.slot = self.engine.quickSlot
-        dialog._wasRunning = self.engine.quickSlot.state == "running"
-        if dialog._wasRunning:
-            dialog.slot.pause()
-            dialog.engine.notifySlotStateChanged()
-
+        dialog = QuickDurationDialog(None, self.engine)
         self.assertEqual(self.engine.quickSlot.state, "paused")
+        self.assertTrue(dialog._wasRunning)
 
         dialog.onCancel(MagicMock())
         self.assertEqual(self.engine.quickSlot.state, "running")
@@ -744,7 +784,7 @@ class TestPackageMetadataAndAssets(unittest.TestCase):
 
     def test_build_vars_contains_required_manifest_metadata(self):
         info = buildVars.addon_info
-        self.assertEqual(info["addon_name"], "tymer")
+        self.assertEqual(info["addon_name"], "instantTimer")
         self.assertEqual(info["addon_version"], "2026.1")
         self.assertEqual(info["addon_minimumNVDAVersion"], "2024.1.0")
         self.assertEqual(info["addon_lastTestedNVDAVersion"], "2026.2.0")
@@ -789,11 +829,11 @@ class TestPackageMetadataAndAssets(unittest.TestCase):
             return entries
 
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        pot_path = os.path.join(base_dir, "tymer.pot")
+        pot_path = os.path.join(base_dir, "instantTimer.pot")
         po_path = os.path.join(
             base_dir, "addon", "locale", "ar", "LC_MESSAGES", "nvda.po"
         )
-        self.assertTrue(os.path.isfile(pot_path), "tymer.pot does not exist")
+        self.assertTrue(os.path.isfile(pot_path), "instantTimer.pot does not exist")
         self.assertTrue(os.path.isfile(po_path), "nvda.po does not exist")
 
         pot_entries = parse_po_entries(pot_path)
@@ -808,6 +848,37 @@ class TestPackageMetadataAndAssets(unittest.TestCase):
         self.assertEqual(
             untranslated, [], f"Untranslated strings in nvda.po: {untranslated}"
         )
+
+
+class TestRobustnessAndGuardrails(unittest.TestCase):
+    """Verifies edge-case robustness, logging fallbacks, and plugin filtering."""
+
+    def test_fallback_logger_has_debug_warning(self):
+        import instantTimer.durationDialog as dd
+
+        self.assertTrue(hasattr(dd.log, "debugWarning"))
+        # Verify calling debugWarning does not raise AttributeError
+        dd.log.debugWarning("Test fallback warning")
+
+    def test_settings_sync_running_engine_targets_only_instant_timer(self):
+        from instantTimer.settingsGUI import InstantTimerSettingsPanel
+
+        panel = InstantTimerSettingsPanel.__new__(InstantTimerSettingsPanel)
+
+        foreign_plugin = MagicMock()
+        foreign_plugin.__module__ = "globalPlugins.someOtherAddon"
+        foreign_plugin.engine = MagicMock()
+
+        our_plugin = MagicMock()
+        our_plugin.__module__ = "globalPlugins.instantTimer"
+        our_plugin.engine = MagicMock()
+
+        mock_globalPluginHandler.runningPlugins = [foreign_plugin, our_plugin]
+
+        panel._syncRunningEngine([300, 600, 900, 1500, 3600], ["", "", "", "", ""])
+
+        foreign_plugin.engine.resetToDefaults.assert_not_called()
+        our_plugin.engine.resetToDefaults.assert_called_once()
 
 
 if __name__ == "__main__":

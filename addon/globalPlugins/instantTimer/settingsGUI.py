@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-# Tymer Add-on for NVDA
+# Instant Timer Add-on for NVDA
 # Author: Kamal Yaser <kamalyaser31@gmail.com>
 
 from typing import Callable, Tuple, List
 import wx
 import gui
 from gui.settingsDialogs import SettingsPanel
-import config
+from . import config as it_config
 import addonHandler
 
 addonHandler.initTranslation()
 _: Callable[[str], str]
 
 
-class TymerSettingsPanel(SettingsPanel):
-    """Preferences settings panel for Tymer integrated into NVDA Settings."""
+class InstantTimerSettingsPanel(SettingsPanel):
+    """Preferences settings panel for Instant Timer integrated into NVDA Settings."""
 
-    title = _("Tymer")
+    title = _("Instant Timer")
 
     _notificationChoices: Tuple[str, ...] = (
         _("Sound only"),
@@ -96,8 +96,15 @@ class TymerSettingsPanel(SettingsPanel):
         except (ValueError, TypeError):
             return default
 
+    conf = None
+
+    def _getConf(self):
+        if self.conf is not None:
+            return self.conf
+        return it_config.loadConfig()
+
     def _loadCurrentValues(self) -> None:
-        conf = config.conf["tymer"]
+        conf = self._getConf()
         self.notificationStyleChoice.SetSelection(
             self._safeIndex(
                 conf.get("notificationStyle", 0), len(self._notificationChoices)
@@ -134,10 +141,12 @@ class TymerSettingsPanel(SettingsPanel):
         ):
             from .timerHandler import DEFAULT_DURATIONS, DEFAULT_SLOT_LABELS
 
+            conf = self._getConf()
             durations = list(DEFAULT_DURATIONS)
             labels = list(DEFAULT_SLOT_LABELS)
-            config.conf["tymer"]["defaultDurations"] = durations
-            config.conf["tymer"]["slotLabels"] = labels
+            conf["defaultDurations"] = durations
+            conf["slotLabels"] = labels
+            it_config.saveConfig(conf)
             self._syncRunningEngine(durations, labels)
             gui.messageBox(
                 _("Timer durations reset to factory defaults."),
@@ -151,16 +160,18 @@ class TymerSettingsPanel(SettingsPanel):
             import globalPluginHandler
 
             for plugin in getattr(globalPluginHandler, "runningPlugins", []):
-                if plugin.__class__.__name__ == "GlobalPlugin" and hasattr(
-                    plugin, "engine"
-                ):
+                mod = getattr(plugin, "__module__", "")
+                if (
+                    mod.startswith("globalPlugins.instantTimer")
+                    or mod.startswith("instantTimer")
+                ) and hasattr(plugin, "engine"):
                     plugin.engine.resetToDefaults(durations, labels)
                     break
-        except Exception:
+        except (ImportError, AttributeError):
             pass
 
     def onSave(self) -> None:
-        conf = config.conf["tymer"]
+        conf = self._getConf()
         conf["notificationStyle"] = self.notificationStyleChoice.GetSelection()
         conf["verbosity"] = self.verbosityChoice.GetSelection()
         conf["entryBeep"] = self.entryBeepCheckBox.GetValue()
@@ -168,3 +179,4 @@ class TymerSettingsPanel(SettingsPanel):
         conf["preExpirySeconds"] = self.preExpirySecondsSpinCtrl.GetValue()
         selectedPolicyIndex = self.restartPolicyChoice.GetSelection()
         conf["restartPolicy"] = self._restartPolicyKeys[selectedPolicyIndex]
+        it_config.saveConfig(conf)

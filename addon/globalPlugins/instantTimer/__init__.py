@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
-# Tymer Add-on for NVDA
+# Instant Timer Add-on for NVDA
 # Author: Kamal Yaser <kamalyaser31@gmail.com>
 
-from typing import Callable, Tuple, List, Optional, Dict, Final
+from typing import Callable, Tuple, List, Optional, Dict
 import time
 import globalPluginHandler
 import scriptHandler
 import globalVars
-import config
-from configobj.validate import VdtTypeError
 import gui
 import ui
 import tones
 import addonHandler
+from . import config as it_config
 from .timerHandler import (
     CountdownEngine,
     TimerSlot,
@@ -20,57 +19,42 @@ from .timerHandler import (
     DEFAULT_DURATIONS,
     DEFAULT_SLOT_LABELS,
 )
-from .settingsGUI import TymerSettingsPanel
-from .durationDialog import DurationDialog, QuickDurationDialog
+from .settingsGUI import InstantTimerSettingsPanel
+from .durationDialog import DurationDialog
 
 addonHandler.initTranslation()
 _: Callable[[str], str]
 
-DEFAULT_CONFIG: Final = {
-    "notificationStyle": 0,
-    "verbosity": 0,
-    "entryBeep": True,
-    "preExpiryCue": False,
-    "preExpirySeconds": 10,
-    "restartPolicy": "resume",
-    "defaultDurations": DEFAULT_DURATIONS,
-    "slotLabels": DEFAULT_SLOT_LABELS,
-    "activeTimersData": ["", "", "", "", ""],
-}
-
-confspec = {
-    "notificationStyle": "integer(default=0)",
-    "verbosity": "integer(default=0)",
-    "entryBeep": "boolean(default=True)",
-    "preExpiryCue": "boolean(default=False)",
-    "preExpirySeconds": "integer(min=1, max=300, default=10)",
-    "restartPolicy": "string(default='resume')",
-    "defaultDurations": "int_list(default=list(300, 600, 900, 1500, 3600))",
-    "slotLabels": "string_list(default=list('', '', '', '', ''))",
-    "activeTimersData": "string_list(default=list('', '', '', '', ''))",
-}
-config.conf.spec["tymer"] = confspec
-
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
-    """Global plugin managing the Tymer modal command layer and slots."""
+    """Global plugin managing the Instant Timer modal command layer and slots."""
 
-    scriptCategory = _("Tymer")
+    scriptCategory = _("Instant Timer")
     layerModeActive = False
     layeredScriptToRun: Optional[Callable] = None
 
     def __init__(self):
         super().__init__()
-        if globalVars.appArgs.secure or config.isAppX:
+        try:
+            import config as nvdaConfig
+
+            isAppX = getattr(nvdaConfig, "isAppX", False)
+        except (ImportError, AttributeError):
+            isAppX = False
+        if globalVars.appArgs.secure or isAppX:
             return
 
-        self._validateConfiguration()
-        gui.NVDASettingsDialog.categoryClasses.append(TymerSettingsPanel)
+        self.conf = it_config.loadConfig()
+        InstantTimerSettingsPanel.conf = self.conf
+        gui.NVDASettingsDialog.categoryClasses.append(InstantTimerSettingsPanel)
 
-        conf = config.conf["tymer"]
-        durations = [int(x) for x in conf["defaultDurations"]]
-        labels = [str(x) for x in conf["slotLabels"]]
-        self.engine = CountdownEngine(defaultDurations=durations, defaultLabels=labels)
+        durations = [
+            int(x) for x in self.conf.get("defaultDurations", DEFAULT_DURATIONS)
+        ]
+        labels = [str(x) for x in self.conf.get("slotLabels", DEFAULT_SLOT_LABELS)]
+        self.engine = CountdownEngine(
+            defaultDurations=durations, defaultLabels=labels, conf=self.conf
+        )
 
         self._restoreSessionState()
         self._setupLayerGestures()
@@ -78,37 +62,18 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     def terminate(self):
         super().terminate()
         try:
-            gui.NVDASettingsDialog.categoryClasses.remove(TymerSettingsPanel)
+            gui.NVDASettingsDialog.categoryClasses.remove(InstantTimerSettingsPanel)
         except (ValueError, KeyError, AttributeError):
             pass
         if hasattr(self, "engine"):
             self._saveSessionState()
             self.engine.terminate()
 
-    def _validateConfiguration(self):
-        conf = config.conf["tymer"]
-        validationFailed = False
-        for key in (
-            "notificationStyle",
-            "verbosity",
-            "entryBeep",
-            "preExpiryCue",
-            "preExpirySeconds",
-            "restartPolicy",
-        ):
-            try:
-                conf[key]
-            except (KeyError, VdtTypeError):
-                validationFailed = True
-                conf.profiles[0][key] = DEFAULT_CONFIG[key]
-        if validationFailed and config.conf["general"]["saveConfigurationOnExit"]:
-            config.conf.save()
-
     def _restoreSessionState(self):
-        policy = config.conf["tymer"].get("restartPolicy", "resume")
+        policy = self.conf.get("restartPolicy", "resume")
         if policy == "reset":
             return
-        rawSaved = config.conf["tymer"].get("activeTimersData", [])
+        rawSaved = self.conf.get("activeTimersData", [])
         now = time.time()
         for index, rawSlotData in enumerate(rawSaved):
             self._restoreSlotFromSaved(index, rawSlotData, policy, now)
@@ -139,7 +104,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
                 activeData.append(f"{slot.state}:{slot.remaining():.1f}")
             else:
                 activeData.append("")
-        config.conf["tymer"]["activeTimersData"] = activeData
+        self.conf["activeTimersData"] = activeData
+        it_config.saveConfig(self.conf)
 
     def _setupLayerGestures(self):
         self._layerGestures: List[Tuple[str, Callable, str]] = []
@@ -360,9 +326,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
         return handler
 
-    def _openQuickDurationDialog(self):
-        self._openDurationDialog(self.engine.quickSlot)
-
     def _makeQuickTimerQueryOrStart(self) -> Callable:
         def handler(gesture):
             slot = self.engine.quickSlot
@@ -385,11 +348,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     @scriptHandler.script(
         category=scriptCategory,
         description=_(
-            "Enters Tymer command layer. Press numbers 1-5 for timers, Q for quick timer, S for stopwatch, Space to silence, H for help."
+            "Enters Instant Timer command layer. Press numbers 1-5 for timers, Q for quick timer, S for stopwatch, Space to silence, H for help."
         ),
-        gesture="kb:NVDA+y",
+        gesture="kb:NVDA+e",
     )
-    def script_tymerLayerCommands(self, gesture):
+    def script_instantTimerLayerCommands(self, gesture):
+        if not hasattr(self, "engine") or not hasattr(self, "_layerGestures"):
+            return
+
         if self.layerModeActive:
             self.script_error(gesture)
             return
@@ -398,7 +364,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             self.bindGesture(f"kb:{gestureSpec[0]}", "layerAction")
 
         self.layerModeActive = True
-        if config.conf["tymer"].get("entryBeep", True):
+        if self.conf.get("entryBeep", True):
             tones.beep(100, 15)
 
     def script_layerAction(self, gesture):
@@ -443,7 +409,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     def finish(self):
         self.layerModeActive = False
         self.clearGestureBindings()
-        self.bindGesture("kb:NVDA+y", "tymerLayerCommands")
+        self.bindGesture("kb:NVDA+e", "instantTimerLayerCommands")
 
     def script_error(self, gesture):
         tones.beep(120, 100)
@@ -466,5 +432,5 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
                 for gestureSpec in self._layerGestures
             ]
         )
-        html = f"<h1>{_('Tymer Layer Commands')}</h1><ul>{items}</ul>"
-        ui.browseableMessage(html, _("Tymer Help"), isHtml=True)
+        html = f"<h1>{_('Instant Timer Layer Commands')}</h1><ul>{items}</ul>"
+        ui.browseableMessage(html, _("Instant Timer Help"), isHtml=True)

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-# Tymer Add-on for NVDA
+# Instant Timer Add-on for NVDA
 # Author: Kamal Yaser <kamalyaser31@gmail.com>
 
 from typing import Callable, Optional
 import wx
 import gui
 from gui.settingsDialogs import SettingsDialog
-import config
+from . import config as it_config
 import addonHandler
 import ui
 from .timerHandler import TimerSlot, CountdownEngine, formatTime
@@ -16,7 +16,9 @@ try:
 except ImportError:
     import logging
 
-    log = logging.getLogger("tymer")
+    log = logging.getLogger("instantTimer")
+    if not hasattr(log, "debugWarning"):
+        log.debugWarning = log.warning
 
 addonHandler.initTranslation()
 _: Callable[[str], str]
@@ -139,18 +141,27 @@ class DurationDialog(SettingsDialog):
 
     def _persistSlotSettings(self, index: int, duration: int, label: str) -> None:
         try:
-            durations = list(config.conf["tymer"]["defaultDurations"])
-            labels = list(config.conf["tymer"]["slotLabels"])
-            if 1 <= index <= len(durations):
-                durations[index - 1] = duration
-            if 1 <= index <= len(labels):
-                labels[index - 1] = label
-            config.conf["tymer"]["defaultDurations"] = durations
-            config.conf["tymer"]["slotLabels"] = labels
-            if config.conf["general"]["saveConfigurationOnExit"]:
-                config.conf.save()
-        except (KeyError, IndexError, TypeError):
-            log.debugWarning("Tymer: Failed to persist slot settings", exc_info=True)
+            conf = getattr(self.engine, "conf", None)
+            if conf is not None:
+                durations = list(
+                    conf.get(
+                        "defaultDurations", it_config.DEFAULT_CONFIG["defaultDurations"]
+                    )
+                )
+                labels = list(
+                    conf.get("slotLabels", it_config.DEFAULT_CONFIG["slotLabels"])
+                )
+                if 1 <= index <= len(durations):
+                    durations[index - 1] = duration
+                if 1 <= index <= len(labels):
+                    labels[index - 1] = label
+                conf["defaultDurations"] = durations
+                conf["slotLabels"] = labels
+                it_config.saveConfig(conf)
+        except (OSError, TypeError, ValueError, IndexError):
+            log.debugWarning(
+                "Instant Timer: Failed to persist slot settings", exc_info=True
+            )
 
 
 class QuickDurationDialog(DurationDialog):

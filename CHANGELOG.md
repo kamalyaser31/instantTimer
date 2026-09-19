@@ -1,8 +1,11 @@
 # Changelog
 
-All notable changes to the Tymer add-on will be documented in this file.
+All notable changes to the Instant Timer add-on will be documented in this file.
 
 ## [2026.1-dev] - 2026-09-19
+- fix(core): remediate clean-code-guard and test-guard audit findings: fix entryBeep config lookup in __init__.py, guard secure desktop mode, support debugWarning in fallback logger, qualify plugin module matching, purge mock illusions from run_tests.py, and expand behavioral tests to 48 passing tests (100% green).
+- feat(config): migrate settings, durations, and session persistence to standalone local JSON config (`config.json`) following instantAccess pattern, verified with 44 passing unit tests under clean-code-guard.
+- refactor(project): rename add-on to Instant Timer (`instantTimer`, `المؤقت الفوري`), change layer shortcut to `NVDA+E`, update configuration namespace to `instantTimer`, and package `instantTimer-2026.1.nvda-addon`.
 - feat(settings): configure warning cue lead time in seconds (1-300s, default 10) from NVDA settings panel with dynamic toggle, and apply humanizer purification to all project prose and Arabic translations.
 - feat(keys): swap Shift and Alt key actions across all command layers (presets 1-5, quick timer Q, stopwatch S): Shift now resets to stopped/zero, and Alt now pauses or resumes countdown/stopwatch.
 - docs(guard): resolved docs-guard finding by replacing missing `COPYING.txt` reference with official GNU GPL v2 URL across all documentation files and setting `addon_licenseURL` in `buildVars.py`.
