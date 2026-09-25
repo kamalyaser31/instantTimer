@@ -1,10 +1,10 @@
 # Instant Timer: countdown timers and stopwatch for NVDA
 
-Instant Timer adds countdown timers and a stopwatch to the NVDA screen reader through a quick command layer (`NVDA+E`). It includes five preset timers, an ad-hoc quick timer, and an in-memory stopwatch.
+Instant Timer adds countdown timers and a stopwatch to the NVDA screen reader through a quick command layer (`NVDA+Y`). It includes five preset timers, an ad-hoc quick timer, and an in-memory stopwatch.
 
 ## Features
 
-- **Modal command layer**: Press `NVDA+E` to enter the layer. Pressing any layer key runs its action and immediately exits back to normal typing. Pressing an unassigned key beeps and exits.
+- **Modal command layer**: Press `NVDA+Y` to enter the layer. Pressing any layer key runs its action and immediately exits back to normal typing. Pressing an unassigned key beeps and exits.
 - **Five preset timers**: Pre-set to 5, 10, 15, 25, and 60 minutes. Durations and optional labels can be adjusted at any time.
 - **Quick timer (`Q`)**: An ad-hoc countdown timer that runs in memory without altering your five preset timers. Pressing `Q` when stopped opens the duration dialog focused on minutes; pressing Enter starts it immediately.
 - **Stopwatch (`S`)**: An in-memory count-up timer.
@@ -14,7 +14,7 @@ Instant Timer adds countdown timers and a stopwatch to the NVDA screen reader th
 
 ## Command reference
 
-Press `NVDA+E` to activate the layer. A short beep confirms entry if enabled in preferences. Then press one of the following keys:
+Press `NVDA+Y` to activate the layer. A short beep confirms entry if enabled in preferences. Then press one of the following keys:
 
 | Key | Action |
 | :--- | :--- |
@@ -43,7 +43,7 @@ Open **NVDA Menu > Preferences > Settings** and select **Instant Timer**:
 
 1. **Expiry notification style**: Sound only, Speech only, or Sound and speech.
 2. **Speech verbosity mode**: Beginner (descriptive guidance) or Advanced (concise numbers).
-3. **Play audio cue when entering command layer**: Plays an entry tone on `NVDA+E`.
+3. **Play audio cue when entering command layer**: Plays an entry tone on `NVDA+Y`.
 4. **Play warning cue before expiration**: Plays a warning beep before a countdown reaches zero.
 5. **Warning cue lead time in seconds**: The lead time before expiration (1 to 300 seconds, default: 10) when the warning sounds.
 6. **Behavior on NVDA restart**: Resume active countdowns, reset all to stopped, or keep countdowns paused.

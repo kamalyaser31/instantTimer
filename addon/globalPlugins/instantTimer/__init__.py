@@ -350,7 +350,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         description=_(
             "Enters Instant Timer command layer. Press numbers 1-5 for timers, Q for quick timer, S for stopwatch, Space to silence, H for help."
         ),
-        gesture="kb:NVDA+e",
+        gesture="kb:NVDA+y",
     )
     def script_instantTimerLayerCommands(self, gesture):
         if not hasattr(self, "engine") or not hasattr(self, "_layerGestures"):
@@ -409,7 +409,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     def finish(self):
         self.layerModeActive = False
         self.clearGestureBindings()
-        self.bindGesture("kb:NVDA+e", "instantTimerLayerCommands")
+        self.bindGesture("kb:NVDA+y", "instantTimerLayerCommands")
 
     def script_error(self, gesture):
         tones.beep(120, 100)

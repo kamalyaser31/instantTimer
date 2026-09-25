@@ -422,7 +422,7 @@ class TestPluginLayerLifecycle(unittest.TestCase):
         self.assertFalse(plugin.layerModeActive)
         plugin.clearGestureBindings.assert_called_once()
         plugin.bindGesture.assert_called_once_with(
-            "kb:NVDA+e", "instantTimerLayerCommands"
+            "kb:NVDA+y", "instantTimerLayerCommands"
         )
 
     def test_layer_entry_activates_mode_registers_gestures_and_emits_beep_when_enabled(
